@@ -142,7 +142,7 @@ public class DefaultThreadPoolPluginManager implements ThreadPoolPluginManager {
      * @param pluginComparator comparator of plugin
      */
     public DefaultThreadPoolPluginManager(
-                                          @NonNull ReadWriteLock mainLock, @Nullable Comparator<Object> pluginComparator) {
+            @NonNull ReadWriteLock mainLock, @Nullable Comparator<Object> pluginComparator) {
         this.pluginComparator = pluginComparator;
         this.mainLock = new ReadWriteLockSupport(mainLock);
     }
