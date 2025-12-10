@@ -93,7 +93,7 @@ public class ThreadPoolTaskExecutorAdapter implements DynamicThreadPoolAdapter {
         threadPoolBuilder.capacity(queueCapacity);
         Optional.ofNullable(ReflectUtil.getFieldValue(executor, TASK_DECORATOR))
                 .ifPresent((taskDecorator) -> threadPoolBuilder.taskDecorator((TaskDecorator) taskDecorator));
-        return (DynamicThreadPoolExecutor) threadPoolBuilder.build();
+        return (DynamicThreadPoolExecutor) threadPoolBuilder.build(); // 在这里使用了新的队列(动态扩容队列)
     }
 
     @Override

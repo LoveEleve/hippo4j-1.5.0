@@ -87,23 +87,12 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
      * @throws NullPointerException     if {@code workQueue}
      *                                  or {@code threadFactory} or {@code handler} is null
      */
-    public DynamicThreadPoolExecutor(
-                                     int corePoolSize, int maximumPoolSize,
-                                     long keepAliveTime, TimeUnit unit,
-                                     long executeTimeOut, boolean waitForTasksToCompleteOnShutdown, long awaitTerminationMillis,
-                                     @NonNull BlockingQueue<Runnable> blockingQueue,
-                                     @NonNull String threadPoolId,
-                                     @NonNull ThreadFactory threadFactory,
-                                     @NonNull RejectedExecutionHandler rejectedExecutionHandler) {
-        super(
-                threadPoolId, new DefaultThreadPoolPluginManager().setPluginComparator(AnnotationAwareOrderComparator.INSTANCE),
-                corePoolSize, maximumPoolSize, keepAliveTime, unit,
-                blockingQueue, threadFactory, rejectedExecutionHandler);
+    public DynamicThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, long executeTimeOut, boolean waitForTasksToCompleteOnShutdown, long awaitTerminationMillis, @NonNull BlockingQueue<Runnable> blockingQueue, @NonNull String threadPoolId, @NonNull ThreadFactory threadFactory, @NonNull RejectedExecutionHandler rejectedExecutionHandler) {
+        super(threadPoolId, new DefaultThreadPoolPluginManager().setPluginComparator(AnnotationAwareOrderComparator.INSTANCE), corePoolSize, maximumPoolSize, keepAliveTime, unit, blockingQueue, threadFactory, rejectedExecutionHandler);
         log.info("Initializing ExecutorService '{}'", threadPoolId);
         this.waitForTasksToCompleteOnShutdown = waitForTasksToCompleteOnShutdown;
-        // Init default plugins.
-        new DefaultThreadPoolPluginRegistrar(executeTimeOut, awaitTerminationMillis)
-                .doRegister(this);
+        // Init default plugins. 在创建动态线程池的时候就默认注册一些内置的插件
+        new DefaultThreadPoolPluginRegistrar(executeTimeOut, awaitTerminationMillis).doRegister(this);
         this.active = new AtomicBoolean(true);
     }
 
@@ -147,9 +136,7 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
      */
     @Deprecated
     public long getAwaitTerminationMillis() {
-        return getPluginOfType(ThreadPoolExecutorShutdownPlugin.PLUGIN_NAME, ThreadPoolExecutorShutdownPlugin.class)
-                .map(ThreadPoolExecutorShutdownPlugin::getAwaitTerminationMillis)
-                .orElse(-1L);
+        return getPluginOfType(ThreadPoolExecutorShutdownPlugin.PLUGIN_NAME, ThreadPoolExecutorShutdownPlugin.class).map(ThreadPoolExecutorShutdownPlugin::getAwaitTerminationMillis).orElse(-1L);
     }
 
     /**
@@ -162,8 +149,7 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
     @Deprecated
     public void setSupportParam(long awaitTerminationMillis, boolean waitForTasksToCompleteOnShutdown) {
         setWaitForTasksToCompleteOnShutdown(waitForTasksToCompleteOnShutdown);
-        getPluginOfType(ThreadPoolExecutorShutdownPlugin.PLUGIN_NAME, ThreadPoolExecutorShutdownPlugin.class)
-                .ifPresent(processor -> processor.setAwaitTerminationMillis(awaitTerminationMillis));
+        getPluginOfType(ThreadPoolExecutorShutdownPlugin.PLUGIN_NAME, ThreadPoolExecutorShutdownPlugin.class).ifPresent(processor -> processor.setAwaitTerminationMillis(awaitTerminationMillis));
     }
 
     /**
@@ -174,9 +160,7 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
      */
     @Deprecated
     public Long getRejectCountNum() {
-        return getPluginOfType(TaskRejectCountRecordPlugin.PLUGIN_NAME, TaskRejectCountRecordPlugin.class)
-                .map(TaskRejectCountRecordPlugin::getRejectCountNum)
-                .orElse(-1L);
+        return getPluginOfType(TaskRejectCountRecordPlugin.PLUGIN_NAME, TaskRejectCountRecordPlugin.class).map(TaskRejectCountRecordPlugin::getRejectCountNum).orElse(-1L);
     }
 
     /**
@@ -187,9 +171,7 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
      */
     @Deprecated
     public AtomicLong getRejectCount() {
-        return getPluginOfType(TaskRejectCountRecordPlugin.PLUGIN_NAME, TaskRejectCountRecordPlugin.class)
-                .map(TaskRejectCountRecordPlugin::getRejectCount)
-                .orElse(new AtomicLong(0));
+        return getPluginOfType(TaskRejectCountRecordPlugin.PLUGIN_NAME, TaskRejectCountRecordPlugin.class).map(TaskRejectCountRecordPlugin::getRejectCount).orElse(new AtomicLong(0));
     }
 
     /**
@@ -199,9 +181,7 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
      */
     @Deprecated
     public Long getExecuteTimeOut() {
-        return getPluginOfType(TaskTimeoutNotifyAlarmPlugin.PLUGIN_NAME, TaskTimeoutNotifyAlarmPlugin.class)
-                .map(TaskTimeoutNotifyAlarmPlugin::getExecuteTimeOut)
-                .orElse(-1L);
+        return getPluginOfType(TaskTimeoutNotifyAlarmPlugin.PLUGIN_NAME, TaskTimeoutNotifyAlarmPlugin.class).map(TaskTimeoutNotifyAlarmPlugin::getExecuteTimeOut).orElse(-1L);
     }
 
     /**
@@ -212,8 +192,7 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
      */
     @Deprecated
     public void setExecuteTimeOut(Long executeTimeOut) {
-        getPluginOfType(TaskTimeoutNotifyAlarmPlugin.PLUGIN_NAME, TaskTimeoutNotifyAlarmPlugin.class)
-                .ifPresent(processor -> processor.setExecuteTimeOut(executeTimeOut));
+        getPluginOfType(TaskTimeoutNotifyAlarmPlugin.PLUGIN_NAME, TaskTimeoutNotifyAlarmPlugin.class).ifPresent(processor -> processor.setExecuteTimeOut(executeTimeOut));
     }
 
     /**
@@ -223,9 +202,7 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
      */
     @Deprecated
     public TaskDecorator getTaskDecorator() {
-        return getPluginOfType(TaskDecoratorPlugin.PLUGIN_NAME, TaskDecoratorPlugin.class)
-                .map(processor -> CollectionUtil.getFirst(processor.getDecorators()))
-                .orElse(null);
+        return getPluginOfType(TaskDecoratorPlugin.PLUGIN_NAME, TaskDecoratorPlugin.class).map(processor -> CollectionUtil.getFirst(processor.getDecorators())).orElse(null);
     }
 
     /**
@@ -236,13 +213,12 @@ public class DynamicThreadPoolExecutor extends ExtensibleThreadPoolExecutor impl
      */
     @Deprecated
     public void setTaskDecorator(TaskDecorator taskDecorator) {
-        getPluginOfType(TaskDecoratorPlugin.PLUGIN_NAME, TaskDecoratorPlugin.class)
-                .ifPresent(processor -> {
-                    if (Objects.nonNull(taskDecorator)) {
-                        processor.clearDecorators();
-                        processor.addDecorator(taskDecorator);
-                    }
-                });
+        getPluginOfType(TaskDecoratorPlugin.PLUGIN_NAME, TaskDecoratorPlugin.class).ifPresent(processor -> {
+            if (Objects.nonNull(taskDecorator)) {
+                processor.clearDecorators();
+                processor.addDecorator(taskDecorator);
+            }
+        });
     }
 
     /**

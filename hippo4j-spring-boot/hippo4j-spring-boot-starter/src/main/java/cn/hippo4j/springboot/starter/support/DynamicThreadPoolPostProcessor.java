@@ -166,6 +166,7 @@ public final class DynamicThreadPoolPostProcessor implements BeanPostProcessor {
         } catch (Exception ex) {
             log.error("Failed to initialize thread pool configuration. error message: {}", ex.getMessage());
         }
+
         GlobalThreadPoolManage.register(dynamicThreadPoolWrapper.getThreadPoolId(), threadPoolParameterInfo, dynamicThreadPoolWrapper);
         return executor;
     }

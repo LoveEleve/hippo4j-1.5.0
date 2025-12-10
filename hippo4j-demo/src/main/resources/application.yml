@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: test-fix
+  dynamic:
+    thread-pool:
+      server-addr: http://localhost:6691
+      namespace: fix
+      item-id: ${spring.application.name}
+      username: admin
+      password: 123456
+
+threadPool:
+  produce: produce-test
+  consume: consume-test
+
+logging:
+  level:
+    root: INFO
+    com.wjcoder: DEBUG
+    cn.hippo4j: DEBUG
