@@ -85,13 +85,8 @@ public class GlobalThreadPoolManage {
      * @param executor            executor
      */
     public static void register(String threadPoolId, ThreadPoolParameter threadPoolParameter, DynamicThreadPoolWrapper executor) {
-        log.info("========== [测试日志] 开始注册动态线程池 ==========");
-        log.info("[测试日志] 线程池ID: {}", threadPoolId);
-        log.info("[测试日志] 线程池参数: {}", threadPoolParameter);
-        log.info("[测试日志] 线程池执行器: {}", executor);
         registerPool(threadPoolId, executor);
         registerPoolParameter(threadPoolId, threadPoolParameter);
-        log.info("========== [测试日志] 动态线程池注册完成 ==========");
     }
 
     /**
